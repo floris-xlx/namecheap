@@ -1,0 +1,2 @@
+# namecheap
+Namecheap Rust SDK
