@@ -1,0 +1,15 @@
+[package]
+name = "namecheap"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tracing = "0.1.41"
+reqwest = { version = "0.12.4", features = ["json", "blocking", "rustls-tls","native-tls"] }
+serde_json = "1.0.111"
+dotenv = "0.15.0"
+tokio = { version = "1.38.1", features = ["full"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = { version = "0.4", features = ["serde"] }
+serde  = { version = "1.0.196", features = ["derive"] }
+clap = "4.5.35"
