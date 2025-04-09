@@ -1,11 +1,14 @@
 // utils
 use namecheap::NameCheapClient;
 use namecheap::utils::tracer::init_tracing;
-use namecheap::utils::request_builder::RequestBuilder;
+use namecheap::utils::request_builder::Request;
+use namecheap::Domain;
 
 use dotenv::dotenv;
 use std::env::var;
 use tracing::{ error, info };
+use reqwest::Response;
+
 
 
 #[tokio::main]
@@ -33,8 +36,10 @@ async fn main() {
     );
     info!("NameCheapClient created: {:#?}", client);
 
+    let domains: Vec<namecheap::Domain> = client.domains_get_list().await.unwrap();
+    info!("Domains: {:#?}", domains);
 
-    let command: String = "namecheap.domains.getList".to_string();
+
 
     // Example usage of the client
 }

@@ -13,6 +13,7 @@ pub mod domains;
 pub const NAMECHEAP_API_URL: &str = "https://api.namecheap.com";
 pub const NAMECHEAP_SANDBOX_API_URL: &str = "https://api.sandbox.namecheap.com";
 
+
 /// ### NameCheap API Client
 ///
 /// This struct represents a client for the NameCheap API.
@@ -32,6 +33,8 @@ pub const NAMECHEAP_SANDBOX_API_URL: &str = "https://api.sandbox.namecheap.com";
 ///
 ///
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+#[derive(PartialEq, Eq, Hash)]
 pub struct NameCheapClient {
     pub api_user: String,
     pub api_key: String,
@@ -40,6 +43,44 @@ pub struct NameCheapClient {
     pub production: bool,
     pub api_url: Option<String>,
 }
+
+
+/// ### Domain
+/// 
+/// This struct represents a domain object returned by the NameCheap API.
+/// It contains various fields that provide information about the domain.
+/// 
+/// #### Fields
+/// - `id`: The unique identifier for the domain.
+/// - `name`: The name of the domain.
+/// - `user`: The user associated with the domain.
+/// - `created`: The creation date of the domain.
+/// - `expires`: The expiration date of the domain.
+/// - `is_expired`: A boolean indicating whether the domain is expired.
+/// - `is_locked`: A boolean indicating whether the domain is locked.
+/// - `auto_renew`: A boolean indicating whether auto-renew is enabled.
+/// - `who_is_guard`: A boolean indicating whether WHOIS guard is enabled.
+/// - `is_premium`: A boolean indicating whether the domain is premium.
+/// - `is_our_dns`: A boolean indicating whether the domain uses NameCheap's DNS.
+/// 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+#[derive(PartialEq, Eq, Hash)]
+pub struct Domain {
+    pub id: i64,
+    pub name: String,
+    pub user: String,
+    pub created: String,
+    pub expires: String,
+    pub is_expired: bool,
+    pub is_locked: bool,
+    pub auto_renew: bool,
+    pub whois_guard: bool,
+    pub is_premium: bool,
+    pub is_our_dns: bool,
+}
+
+
 
 impl NameCheapClient {
     /// Creates a new `NameCheapClient` instance with the provided credentials and configuration.

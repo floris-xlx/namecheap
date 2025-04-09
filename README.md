@@ -28,8 +28,9 @@ let client: NameCheapClient = NameCheapClient::new(
 
 ### NameCheap API Coverage
 
+
 #### `domains`
-- [ ] **namecheap.domains.getList**: Retrieve a list of domains associated with your account.
+- [x] **namecheap.domains.getList**: Retrieve a list of domains associated with your account.
 - [ ] **namecheap.domains.getContacts**: Get contact information for a specific domain.
 - [ ] **namecheap.domains.create**: Register a new domain.
 - [ ] **namecheap.domains.getTldList**: Retrieve a list of supported TLDs.

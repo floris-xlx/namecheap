@@ -18,3 +18,5 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 chrono = { version = "0.4", features = ["serde"] }
 serde  = { version = "1.0.196", features = ["derive"] }
 clap = "4.5.35"
+anyhow = "1.0.97"
+xml = "0.8.20"
