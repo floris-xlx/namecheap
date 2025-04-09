@@ -13,8 +13,8 @@ async fn main() {
     init_tracing();
 
     let api_key: String = var("NAMECHEAP_API_KEY").expect("NAMECHEAP_API_KEY must be set");
-    let api_username: String = var("NAMECHEAP_API_USERNAME").expect(
-        "NAMECHEAP_API_USERNAME must be set"
+    let api_username: String = var("NAMECHEAP_USER_NAME").expect(
+        "NAMECHEAP_USER_NAME must be set"
     );
     let client_ip: String = var("NAMECHEAP_CLIENT_IP").expect("NAMECHEAP_CLIENT_IP must be set");
     let user_name: String = var("NAMECHEAP_USER_NAME").expect("NAMECHEAP_USER_NAME must be set");
