@@ -47,6 +47,17 @@ impl NameCheapClient {
     /// - `client_ip`: The client IP address.
     /// - `user_name`: The user name.
     /// - `production`: A boolean indicating whether to use the production environment.
+    /// 
+    /// #### Example
+    /// ```rust
+    /// let client: NameCheapClient = NameCheapClient::new(
+    ///     api_username,
+    ///     api_key,
+    ///     client_ip,
+    ///     user_name,
+    ///     production
+    /// );
+    /// ```
     ///     
     pub fn new(
         api_user: String,
