@@ -1,10 +1,12 @@
 // utils
 use namecheap::NameCheapClient;
 use namecheap::utils::tracer::init_tracing;
+use namecheap::utils::request_builder::RequestBuilder;
 
 use dotenv::dotenv;
 use std::env::var;
 use tracing::{ error, info };
+
 
 #[tokio::main]
 async fn main() {
@@ -13,9 +15,8 @@ async fn main() {
     init_tracing();
 
     let api_key: String = var("NAMECHEAP_API_KEY").expect("NAMECHEAP_API_KEY must be set");
-    let api_username: String = var("NAMECHEAP_USER_NAME").expect(
-        "NAMECHEAP_USER_NAME must be set"
-    );
+    let api_username: String = var("NAMECHEAP_USER_NAME").expect("NAMECHEAP_USER_NAME must be set");
+
     let client_ip: String = var("NAMECHEAP_CLIENT_IP").expect("NAMECHEAP_CLIENT_IP must be set");
     let user_name: String = var("NAMECHEAP_USER_NAME").expect("NAMECHEAP_USER_NAME must be set");
     let production: bool = var("NAMECHEAP_PRODUCTION")
@@ -31,6 +32,9 @@ async fn main() {
         production
     );
     info!("NameCheapClient created: {:#?}", client);
+
+
+    let command: String = "namecheap.domains.getList".to_string();
 
     // Example usage of the client
 }
