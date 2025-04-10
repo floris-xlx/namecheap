@@ -88,10 +88,9 @@ mod tests {
         let client: NameCheapClient = client.unwrap();
 
         let dns_list: Value = client.domains_dns_get_list("xylex", "ai").await.unwrap();
-        info!("DNS List: {:#?}", dns_list);
 
         // Expected DNS list
-        let expected_dns_list =
+        let expected_dns_list: Value =
             json!([
             {"$text": "dns1.registrar-servers.com"},
             {"$text": "dns2.registrar-servers.com"}
