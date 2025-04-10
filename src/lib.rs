@@ -103,6 +103,30 @@ pub struct Contact {
     pub read_only: bool,
 }
 
+/// ### Host
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+#[derive(PartialEq, Eq, Hash)]
+pub struct Host {
+    pub host_id: String,
+    pub name: String,
+    pub address: String,
+    #[serde(rename = "type")]
+    pub type_: String,
+    #[serde(rename = "is_active")]
+    pub is_active: bool,
+    #[serde(rename = "ttl")]
+    pub ttl: String,
+    #[serde(rename = "mxpref")]
+    pub mx_pref: String,
+    #[serde(rename = "is_ddnsenabled")]
+    pub is_ddns_enabled: bool,
+    #[serde(rename = "friendly_name")]
+    pub friendly_name: String,
+    #[serde(rename = "associated_app_title")]
+    pub associated_app_title: String,
+}
+
 
 
 impl NameCheapClient {

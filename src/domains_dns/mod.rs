@@ -13,3 +13,4 @@
 //! These methods allow for comprehensive management of DNS configurations, ensuring that domain settings can be tailored to specific needs or reverted to default configurations as required.
 
 pub mod get_list;
+pub mod get_hosts;

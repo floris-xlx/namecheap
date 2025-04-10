@@ -24,12 +24,11 @@ async fn main() {
     );
     // let domains: Value = client.domains_get_list(1).await.unwrap();
     // let contacts = client.domains_get_contacts("xylex.ai").await.unwrap();
-    let tld_list = client.domains_get_tld_list().await.unwrap();
+    // let tld_list = client.domains_get_tld_list().await.unwrap();
     // let get_list: Value = client.domains_dns_get_list("xylex", "ai").await.unwrap();
+    let domains_get_hosts: Value = client.domains_dns_get_hosts("xylex", "ai").await.unwrap();
 
-
-
-    info!("get_list: {:#?}", tld_list);
+    info!("domains_get_hosts: {:#?}", domains_get_hosts);
 
     // Example usage of the client
 }
