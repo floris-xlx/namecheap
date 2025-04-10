@@ -1,8 +1,6 @@
-
 use serde::Deserialize;
 use serde::Serialize;
 use dotenv::dotenv;
-
 
 pub mod utils;
 pub mod domains;
@@ -11,7 +9,6 @@ pub mod domains_dns;
 
 pub const NAMECHEAP_API_URL: &str = "https://api.namecheap.com";
 pub const NAMECHEAP_SANDBOX_API_URL: &str = "https://api.sandbox.namecheap.com";
-
 
 /// ### NameCheap API Client
 ///
@@ -43,12 +40,11 @@ pub struct NameCheapClient {
     pub api_url: Option<String>,
 }
 
-
 /// ### Domain
-/// 
+///
 /// This struct represents a domain object returned by the NameCheap API.
 /// It contains various fields that provide information about the domain.
-/// 
+///
 /// #### Fields
 /// - `id`: The unique identifier for the domain.
 /// - `name`: The name of the domain.
@@ -61,7 +57,7 @@ pub struct NameCheapClient {
 /// - `who_is_guard`: A boolean indicating whether WHOIS guard is enabled.
 /// - `is_premium`: A boolean indicating whether the domain is premium.
 /// - `is_our_dns`: A boolean indicating whether the domain uses NameCheap's DNS.
-/// 
+///
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[derive(PartialEq, Eq, Hash)]
@@ -78,7 +74,6 @@ pub struct Domain {
     pub is_premium: bool,
     pub is_our_dns: bool,
 }
-
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -116,7 +111,7 @@ pub struct Host {
     #[serde(rename = "is_active")]
     pub is_active: bool,
     #[serde(rename = "ttl")]
-    pub ttl: String,
+    pub ttl: i64,
     #[serde(rename = "mxpref")]
     pub mx_pref: String,
     #[serde(rename = "is_ddnsenabled")]
@@ -127,7 +122,41 @@ pub struct Host {
     pub associated_app_title: String,
 }
 
+// Impl of host
 
+impl Host {
+    /// Creates a new `Host` instance with default values.
+    ///
+    /// This method initializes the `Host` struct with empty strings for `host_id`, `name`, `address`, `type_`, and `mx_pref`.
+    ///
+    /// ### Fields
+    /// - `host_id`: The unique identifier for the host (default: empty string).
+    /// - `name`: The name of the host (default: empty string).
+    /// - `address`: The address of the host (default: empty string).
+    /// - `type_`: The type of the host (default: empty string).
+    /// - `is_active`: A boolean indicating whether the host is active (default: false).
+    /// - `ttl`: The time-to-live value for the host (default: 0).
+    /// - `mx_pref`: The MX preference for the host (default: empty string).
+    /// - `is_ddns_enabled`: A boolean indicating whether DDNS is enabled for the host (default: false).
+    /// - `friendly_name`: The friendly name of the host (default: empty string).
+    /// - `associated_app_title`: The title of the associated app (default: empty string).
+    ///
+    ///
+    pub fn new() -> Self {
+        Host {
+            host_id: String::new(),
+            name: String::new(),
+            address: String::new(),
+            type_: String::new(),
+            is_active: false,
+            ttl: 0,
+            mx_pref: String::new(),
+            is_ddns_enabled: false,
+            friendly_name: String::new(),
+            associated_app_title: String::new(),
+        }
+    }
+}
 
 impl NameCheapClient {
     /// Creates a new `NameCheapClient` instance with the provided credentials and configuration.
@@ -184,7 +213,7 @@ impl NameCheapClient {
     /// #### Example
     /// ```rust
     /// use dotenv::dotenv;
-    /// 
+    ///
     /// dotenv().ok(); // Load environment variables from .env file
     /// let client = NameCheapClient::new_from_env().expect("Failed to create client from environment");
     /// ```
@@ -192,7 +221,7 @@ impl NameCheapClient {
     pub fn new_from_env() -> Result<Self, Box<dyn std::error::Error>> {
         dotenv().ok();
         use std::env::var;
-        
+
         let user_name = var("NAMECHEAP_USER_NAME")?;
         let api_key = var("NAMECHEAP_API_KEY")?;
         let client_ip = var("NAMECHEAP_CLIENT_IP")?;
@@ -200,13 +229,7 @@ impl NameCheapClient {
             .unwrap_or_else(|_| "false".to_string())
             .parse()
             .unwrap_or(false);
-            
-        Ok(Self::new(
-            user_name.clone(),
-            api_key,
-            client_ip,
-            user_name,
-            production
-        ))
+
+        Ok(Self::new(user_name.clone(), api_key, client_ip, user_name, production))
     }
 }

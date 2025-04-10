@@ -34,6 +34,7 @@ pub struct Request {
     domain_id: Option<i64>,
     /// Additional parameters for the API request (optional).
     params: Option<Value>,
+
 }
 
 impl Request {
@@ -62,6 +63,7 @@ impl Request {
             domain_name,
             params,
             domain_id: None,
+
         }
     }
 

@@ -48,13 +48,15 @@ impl NameCheapClient {
             command.to_string(),
             Some(1),
             None,
-            Some(params)
+            Some(params),
+            
         ).send().await?;
+        info!("Response: {:#?}", response);
 
         let hosts = response
             .pointer("/ApiResponse/CommandResponse/DomainDNSGetHostsResult/host")
-            .ok_or("Failed to find host records in response")?
-            .clone();
+            .cloned()
+            .unwrap_or_else(|| json!([])); // Return an empty array if no host records are found
 
         Ok(hosts)
     }

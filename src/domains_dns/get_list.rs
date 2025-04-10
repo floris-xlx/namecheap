@@ -52,7 +52,8 @@ impl NameCheapClient {
             command,
             Some(1),
             None,
-            Some(params)
+            Some(params),
+        
         ).send().await?;
 
         // Extract DNS servers from the response

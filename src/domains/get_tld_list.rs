@@ -42,7 +42,14 @@ impl NameCheapClient {
     pub async fn domains_get_tld_list(&self) -> Result<Value, Box<dyn Error>> {
         let command: String = "namecheap.domains.getTldList".to_string();
 
-        let response: Value = Request::new(self.clone(), command, None, None, None).send().await?;
+        let response: Value = Request::new(
+            self.clone(),
+            command,
+            None,
+            None,
+            None,
+       
+        ).send().await?;
 
         // Extract TLDs from the response
         if let Some(api_response) = response.get("ApiResponse") {
@@ -67,7 +74,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_domains_get_tld_list() -> Result<(), Box<dyn Error>> {
-
         let client: NameCheapClient = NameCheapClient::new_from_env()?;
         let tld_list: Value = client.domains_get_tld_list().await?;
 

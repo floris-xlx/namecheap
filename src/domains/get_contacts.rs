@@ -45,7 +45,8 @@ impl NameCheapClient {
             command,
             None,
             Some(domain_name.to_string()),
-            None // params
+            None, // params
+  
         ).send().await?;
 
         info!("Response: {:#?}", response);

@@ -63,7 +63,14 @@ impl NameCheapClient {
         let page: i64 = page.max(1);
         let page: Option<i64> = Some(page);
 
-        let response: Value = Request::new(self.clone(), command, page, None, None).send().await?;
+        let response: Value = Request::new(
+            self.clone(),
+            command,
+            page,
+            None,
+            None,
+        
+        ).send().await?;
 
         // Extract domains from the response
         if let Some(api_response) = response.get("ApiResponse") {

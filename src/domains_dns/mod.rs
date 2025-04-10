@@ -14,3 +14,4 @@
 
 pub mod get_list;
 pub mod get_hosts;
+pub mod set_hosts;
