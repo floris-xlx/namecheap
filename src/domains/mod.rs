@@ -25,3 +25,6 @@ use crate::utils::request_builder::Request;
 pub mod get_list;
 /// - **domains.getContacts**
 pub mod get_contacts;
+/// - **domains.create**
+/// - **domains.getTldList**
+pub mod get_tld_list;

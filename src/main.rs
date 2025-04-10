@@ -23,10 +23,10 @@ async fn main() {
             .expect("NAMECHEAP_PRODUCTION must be a boolean")
     );
     // let domains: Value = client.domains_get_list(1).await.unwrap();
-    let contacts = client.domains_get_contacts("xylex.ai").await.unwrap();
-
+    // let contacts = client.domains_get_contacts("xylex.ai").await.unwrap();
+    let tld_list = client.domains_get_tld_list().await.unwrap();
     
-    info!("Domains: {:#?}", contacts);
+    info!("tld_list: {:#?}", tld_list);
 
     // Example usage of the client
 }
