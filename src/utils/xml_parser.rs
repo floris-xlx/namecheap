@@ -1,8 +1,11 @@
+//! ## XML Parser
+//! 
+//! 
+
 use xml::reader::{ EventReader, XmlEvent };
 use xml::ParserConfig;
 use serde_json::{ Value, json, Map };
 use anyhow::{ Result, anyhow };
-use std::io::Read;
 
 
 fn convert_camel_to_snake(name: &str) -> String {
@@ -24,7 +27,6 @@ fn convert_camel_to_snake(name: &str) -> String {
 
     result
 }
-
 
 /// Parses XML string into a JSON Value
 ///
@@ -48,7 +50,7 @@ pub fn parse_xml_to_json(xml_str: &str) -> Result<Value> {
     let reader: EventReader<std::io::Cursor<&[u8]>> = EventReader::new_with_config(cursor, config);
 
     let mut stack: Vec<(String, Map<String, Value>)> = Vec::new();
-    let mut current_text = String::new();
+    let mut current_text: String = String::new();
 
     for event in reader {
         match event {

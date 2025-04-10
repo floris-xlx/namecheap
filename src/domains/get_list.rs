@@ -1,16 +1,20 @@
 //! ### `domains.getList` Implementation
-//! 
+//!
 //! This module provides the implementation for the `domains.getList` method of the NameCheap API.
-//! 
+//!
 //! It retrieves a list of domains associated with the user's account.
-//! 
+//!
+//!
+use serde_json::{ Value, json, Map };
+use tracing::{ info, error, warn };
+use std::error::Error;
 
 // crate imports
 use crate::NameCheapClient;
 use crate::Domain;
 use crate::utils::request_builder::Request;
-
-
+use crate::response::paging::extract_pagination_info;
+use crate::response::parse_value::{ parse_string, parse_bool, parse_i64 };
 
 impl NameCheapClient {
     /// Gets a list of domains for the specified user
@@ -54,75 +58,73 @@ impl NameCheapClient {
     ///     }
     /// ]
     /// ```
-    pub async fn domains_get_list(&self) -> Result<Vec<Domain>, Box<dyn std::error::Error>> {
+    pub async fn domains_get_list(&self, page: i64) -> Result<Value, Box<dyn Error>> {
         let command: String = "namecheap.domains.getList".to_string();
-        let response: serde_json::Value = Request::new(self.clone(), command).send().await?;
+        let page: i64 = page.max(1);
+        let page: Option<i64> = Some(page);
+
+        let response: Value = Request::new(self.clone(), command, page).send().await?;
 
         // Extract domains from the response
         if let Some(api_response) = response.get("ApiResponse") {
             if let Some(command_response) = api_response.get("CommandResponse") {
+                let paging: Option<&Map<String, Value>> = command_response
+                    .get("Paging")
+                    .and_then(|p| p.as_object());
+
+                // Extract pagination information using the utility function
+                let (current_page, page_size, total_items, total_pages) =
+                    extract_pagination_info(paging);
                 if let Some(result) = command_response.get("DomainGetListResult") {
+                    // Extract pagination information
+                    // Extract pagination information from the Paging object
+
                     if let Some(domains) = result.get("Domain") {
                         if let Some(domains_array) = domains.as_array() {
                             let mut domain_list: Vec<Domain> = Vec::new();
 
                             for domain in domains_array {
-                                let id: i64 = domain
-                                    .get("id")
-                                    .and_then(|v| v.as_str())
-                                    .unwrap_or("0")
-                                    .parse::<i64>()
-                                    .unwrap_or(0);
-                                let name: String = domain
-                                    .get("name")
-                                    .and_then(|v| v.as_str())
-                                    .unwrap_or("")
-                                    .to_string();
-                                let user: String = domain
-                                    .get("user")
-                                    .and_then(|v| v.as_str())
-                                    .unwrap_or("")
-                                    .to_string();
-                                let created: String = domain
-                                    .get("created")
-                                    .and_then(|v| v.as_str())
-                                    .unwrap_or("")
-                                    .to_string();
-                                let expires: String = domain
-                                    .get("expires")
-                                    .and_then(|v| v.as_str())
-                                    .unwrap_or("")
-                                    .to_string();
-                                let is_expired: bool =
-                                    domain
-                                        .get("is_expired")
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("false") == "true";
-                                let is_locked: bool =
-                                    domain
-                                        .get("is_locked")
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("false") == "true";
-                                let auto_renew: bool =
-                                    domain
-                                        .get("auto_renew")
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("false") == "true";
-                                let whois_guard: bool =
-                                    domain
-                                        .get("whois_guard")
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("NOTPRESENT") == "ENABLED";
-                                let is_premium: bool =
-                                    domain
-                                        .get("is_premium")
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("false") == "true";
-                                let is_our_dns: bool =
-                                    domain
-                                        .get("is_our_dns")
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("false") == "true";
+                                let id: i64 = parse_i64(domain, "id", 0);
+                                let name: String = parse_string(domain, "name", "");
+                                let user: String = parse_string(domain, "user", "");
+                                let created: String = parse_string(domain, "created", "");
+                                let expires: String = parse_string(domain, "expires", "");
+                                let is_expired: bool = parse_bool(
+                                    domain,
+                                    "is_expired",
+                                    "false",
+                                    "true"
+                                );
+                                let is_locked: bool = parse_bool(
+                                    domain,
+                                    "is_locked",
+                                    "false",
+                                    "true"
+                                );
+                                let auto_renew: bool = parse_bool(
+                                    domain,
+                                    "auto_renew",
+                                    "false",
+                                    "true"
+                                );
+                                let whois_guard: bool = parse_bool(
+                                    domain,
+                                    "whois_guard",
+                                    "NOTPRESENT",
+                                    "ENABLED"
+                                );
+                                let is_premium: bool = parse_bool(
+                                    domain,
+                                    "is_premium",
+                                    "false",
+                                    "true"
+                                );
+                                let is_our_dns: bool = parse_bool(
+                                    domain,
+                                    "is_our_dns",
+                                    "false",
+                                    "true"
+                                );
 
                                 domain_list.push(Domain {
                                     id,
@@ -139,13 +141,33 @@ impl NameCheapClient {
                                 });
                             }
 
-                            return Ok(domain_list);
+                            // Create a Value object with domains and pagination info
+                            let result_value: Value =
+                                json!({
+                                "domains": domain_list,
+                                "pagination": {
+                                    "currentPage": current_page,
+                                    "totalPages": total_pages
+                                }
+                            });
+
+                            return Ok(result_value);
                         }
                     }
                 }
             }
         }
 
-        Ok(Vec::new())
+        // Return empty result with default pagination
+        let empty_result: Value =
+            json!({
+            "domains": [],
+            "pagination": {
+                "currentPage": 1,
+                "totalPages": 1
+            }
+        });
+
+        Ok(empty_result)
     }
 }

@@ -21,4 +21,7 @@ use crate::NameCheapClient;
 use crate::Domain;
 use crate::utils::request_builder::Request;
 
+/// - **domains.getList**
 pub mod get_list;
+/// - **domains.getContacts**
+pub mod get_contacts;

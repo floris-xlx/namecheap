@@ -26,6 +26,8 @@ pub struct Request {
     client: NameCheapClient,
     /// The specific API command to be executed.
     command: String,
+    /// The page number for paginated results (optional).
+    page: Option<i64>,
 }
 
 impl Request {
@@ -39,8 +41,8 @@ impl Request {
     /// # Returns
     ///
     /// A new `RequestBuilder` instance.
-    pub fn new(client: NameCheapClient, command: String) -> Self {
-        Request { client, command }
+    pub fn new(client: NameCheapClient, command: String, page: Option<i64>) -> Self {
+        Request { client, command, page }
     }
 
     /// Builds the URL for the API request.
@@ -60,13 +62,14 @@ impl Request {
 
         // Construct the URL using the base URL and the client's credentials
         format!(
-            "{}/xml.response?ApiUser={}&ApiKey={}&UserName={}&Command={}&ClientIp={}",
+            "{}/xml.response?ApiUser={}&ApiKey={}&UserName={}&Command={}&ClientIp={}&Page={}",
             base_url,
             self.client.api_user,
             self.client.api_key,
             self.client.user_name,
             self.command,
-            self.client.client_ip
+            self.client.client_ip,
+            self.page.unwrap_or(1)
         )
     }
 
@@ -80,7 +83,8 @@ impl Request {
     /// A `Result` containing the `Response` if successful, or an `Error` if the request fails.
     pub async fn send(&self) -> Result<Value> {
         let url: String = self.build_url();
-        info!("Sending request to URL: {}", url);
+        info!("Sending request to URL: {:#?}", url);
+
         let client: Client = Client::new();
         let request: RequestBuilder = client
             .request(Method::GET, &url)
@@ -88,7 +92,6 @@ impl Request {
             .header("Content-Type", "application/xml");
 
         let response: Response = request.send().await?;
-        info!("Response: {:#?}", response);
 
         // Ensure we're receiving XML
         if let Some(content_type) = response.headers().get("Content-Type") {

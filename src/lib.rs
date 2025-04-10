@@ -2,13 +2,9 @@
 use serde::Deserialize;
 use serde::Serialize;
 
-use serde_json::Value;
-use std::collections::HashMap;
-use std::fmt;
-use std::fmt::Formatter;
-
 pub mod utils;
 pub mod domains;
+pub mod response;
 
 pub const NAMECHEAP_API_URL: &str = "https://api.namecheap.com";
 pub const NAMECHEAP_SANDBOX_API_URL: &str = "https://api.sandbox.namecheap.com";
