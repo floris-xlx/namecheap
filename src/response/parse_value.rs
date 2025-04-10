@@ -17,7 +17,13 @@ use serde_json::Value;
 /// The string value or the default if not found
 pub fn parse_string(json: &Value, key: &str, default: &str) -> String {
     json.get(key)
-        .and_then(|v| v.as_str())
+        .and_then(|v| {
+            if let Some(text) = v.get("$text") {
+                text.as_str()
+            } else {
+                v.as_str()
+            }
+        })
         .unwrap_or(default)
         .to_string()
 }

@@ -22,10 +22,11 @@ async fn main() {
             .parse()
             .expect("NAMECHEAP_PRODUCTION must be a boolean")
     );
-    let domains: Value = client.domains_get_list(1).await.unwrap();
+    // let domains: Value = client.domains_get_list(1).await.unwrap();
+    let contacts = client.domains_get_contacts("xylex.ai").await.unwrap();
 
     
-    info!("Domains: {:#?}", domains);
+    info!("Domains: {:#?}", contacts);
 
     // Example usage of the client
 }

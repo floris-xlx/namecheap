@@ -77,6 +77,30 @@ pub struct Domain {
 }
 
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+#[derive(PartialEq, Eq, Hash)]
+pub struct Contact {
+    pub type_: String,
+    pub address_1: String,
+    pub address_2: String,
+    pub city: String,
+    pub country: String,
+    pub email_address: String,
+    pub fax: String,
+    pub first_name: String,
+    pub job_title: String,
+    pub last_name: String,
+    pub organization_name: String,
+    pub phone: String,
+    pub phone_ext: String,
+    pub postal_code: String,
+    pub state_province: String,
+    pub state_province_choice: String,
+    pub read_only: bool,
+}
+
+
 
 impl NameCheapClient {
     /// Creates a new `NameCheapClient` instance with the provided credentials and configuration.
@@ -120,5 +144,41 @@ impl NameCheapClient {
                 Some(NAMECHEAP_SANDBOX_API_URL.to_string())
             },
         }
+    }
+
+    /// Creates a new `NameCheapClient` instance from environment variables.
+    ///
+    /// This method expects the following environment variables to be set:
+    /// - `NAMECHEAP_USER_NAME`: Your NameCheap account username
+    /// - `NAMECHEAP_API_KEY`: Your NameCheap API key
+    /// - `NAMECHEAP_CLIENT_IP`: Your client IP address
+    /// - `NAMECHEAP_PRODUCTION`: Boolean indicating whether to use production environment (defaults to false)
+    ///
+    /// #### Example
+    /// ```rust
+    /// use dotenv::dotenv;
+    /// 
+    /// dotenv().ok(); // Load environment variables from .env file
+    /// let client = NameCheapClient::new_from_env().expect("Failed to create client from environment");
+    /// ```
+    ///
+    pub fn new_from_env() -> Result<Self, Box<dyn std::error::Error>> {
+        use std::env::var;
+        
+        let user_name = var("NAMECHEAP_USER_NAME")?;
+        let api_key = var("NAMECHEAP_API_KEY")?;
+        let client_ip = var("NAMECHEAP_CLIENT_IP")?;
+        let production = var("NAMECHEAP_PRODUCTION")
+            .unwrap_or_else(|_| "false".to_string())
+            .parse()
+            .unwrap_or(false);
+            
+        Ok(Self::new(
+            user_name.clone(),
+            api_key,
+            client_ip,
+            user_name,
+            production
+        ))
     }
 }

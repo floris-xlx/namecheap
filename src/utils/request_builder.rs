@@ -28,6 +28,10 @@ pub struct Request {
     command: String,
     /// The page number for paginated results (optional).
     page: Option<i64>,
+    /// Domain name (optional).
+    domain_name: Option<String>,
+    /// Domain ID (optional).
+    domain_id: Option<i64>,
 }
 
 impl Request {
@@ -37,12 +41,24 @@ impl Request {
     ///
     /// - `client`: A `NameCheapClient` instance with the necessary credentials.
     /// - `command`: A `String` representing the API command to be executed.
+    /// - `page`: An optional page number for paginated results.
     ///
     /// # Returns
     ///
     /// A new `RequestBuilder` instance.
-    pub fn new(client: NameCheapClient, command: String, page: Option<i64>) -> Self {
-        Request { client, command, page }
+    pub fn new(
+        client: NameCheapClient,
+        command: String,
+        page: Option<i64>,
+        domain_name: Option<String>
+    ) -> Self {
+        Request {
+            client,
+            command,
+            page,
+            domain_name,
+            domain_id: None,
+        }
     }
 
     /// Builds the URL for the API request.
@@ -60,17 +76,31 @@ impl Request {
             NAMECHEAP_SANDBOX_API_URL
         };
 
-        // Construct the URL using the base URL and the client's credentials
-        format!(
-            "{}/xml.response?ApiUser={}&ApiKey={}&UserName={}&Command={}&ClientIp={}&Page={}",
+        // Start with the base parameters
+        let mut url = format!(
+            "{}/xml.response?ApiUser={}&ApiKey={}&UserName={}&Command={}&ClientIp={}",
             base_url,
             self.client.api_user,
             self.client.api_key,
             self.client.user_name,
             self.command,
-            self.client.client_ip,
-            self.page.unwrap_or(1)
-        )
+            self.client.client_ip
+        );
+
+        // Add optional parameters if they exist
+        if let Some(page) = self.page {
+            url.push_str(&format!("&Page={}", page));
+        }
+
+        if let Some(ref domain_name) = self.domain_name {
+            url.push_str(&format!("&DomainName={}", domain_name));
+        }
+
+        if let Some(domain_id) = self.domain_id {
+            url.push_str(&format!("&DomainID={}", domain_id));
+        }
+
+        url
     }
 
     /// Sends the API request and returns the response.
@@ -80,7 +110,7 @@ impl Request {
     ///
     /// # Returns
     ///
-    /// A `Result` containing the `Response` if successful, or an `Error` if the request fails.
+    /// A `Result` containing the `Value` if successful, or an `Error` if the request fails.
     pub async fn send(&self) -> Result<Value> {
         let url: String = self.build_url();
         info!("Sending request to URL: {:#?}", url);
@@ -106,5 +136,33 @@ impl Request {
         // Parse XML to JSON
         let json_value: Value = parse_xml_to_json(&response_text)?;
         Ok(json_value)
+    }
+
+    /// Sets the domain name for the request.
+    ///
+    /// # Parameters
+    ///
+    /// - `domain_name`: The domain name to set.
+    ///
+    /// # Returns
+    ///
+    /// The modified `Request` instance for method chaining.
+    pub fn with_domain_name(mut self, domain_name: String) -> Self {
+        self.domain_name = Some(domain_name);
+        self
+    }
+
+    /// Sets the domain ID for the request.
+    ///
+    /// # Parameters
+    ///
+    /// - `domain_id`: The domain ID to set.
+    ///
+    /// # Returns
+    ///
+    /// The modified `Request` instance for method chaining.
+    pub fn with_domain_id(mut self, domain_id: i64) -> Self {
+        self.domain_id = Some(domain_id);
+        self
     }
 }

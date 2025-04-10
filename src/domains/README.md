@@ -1,7 +1,7 @@
 #### `domains`
 
 - [x] **namecheap.domains.getList**: Retrieve a list of domains associated with your account.
-- [ ] **namecheap.domains.getContacts**: Get contact information for a specific domain.
+- [x] **namecheap.domains.getContacts**: Get contact information for a specific domain.
 - [ ] **namecheap.domains.create**: Register a new domain.
 - [ ] **namecheap.domains.getTldList**: Retrieve a list of supported TLDs.
 - [ ] **namecheap.domains.setContacts**: Update contact information for a domain.

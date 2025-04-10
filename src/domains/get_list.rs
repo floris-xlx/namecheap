@@ -10,8 +10,7 @@ use tracing::{ info, error, warn };
 use std::error::Error;
 
 // crate imports
-use crate::NameCheapClient;
-use crate::Domain;
+use crate::{NameCheapClient, Domain};
 use crate::utils::request_builder::Request;
 use crate::response::paging::extract_pagination_info;
 use crate::response::parse_value::{ parse_string, parse_bool, parse_i64 };
@@ -63,7 +62,7 @@ impl NameCheapClient {
         let page: i64 = page.max(1);
         let page: Option<i64> = Some(page);
 
-        let response: Value = Request::new(self.clone(), command, page).send().await?;
+        let response: Value = Request::new(self.clone(), command, page, None).send().await?;
 
         // Extract domains from the response
         if let Some(api_response) = response.get("ApiResponse") {
@@ -169,5 +168,27 @@ impl NameCheapClient {
         });
 
         Ok(empty_result)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use dotenv::dotenv;
+    use tracing::info;
+
+    #[tokio::test]
+    async fn test_domains_get_list() {
+        dotenv().ok();
+
+        let client: Result<NameCheapClient, Box<dyn Error>> = NameCheapClient::new_from_env();
+        let client: NameCheapClient = client.unwrap();
+
+        let domains: Value = client.domains_get_list(1).await.unwrap();
+        info!("Domains: {:#?}", domains);
+
+        // Basic validation
+        assert!(domains.get("domains").is_some());
+        assert!(domains.get("pagination").is_some());
     }
 }
