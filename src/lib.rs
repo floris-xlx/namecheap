@@ -1,10 +1,13 @@
 
 use serde::Deserialize;
 use serde::Serialize;
+use dotenv::dotenv;
+
 
 pub mod utils;
 pub mod domains;
 pub mod response;
+pub mod domains_dns;
 
 pub const NAMECHEAP_API_URL: &str = "https://api.namecheap.com";
 pub const NAMECHEAP_SANDBOX_API_URL: &str = "https://api.sandbox.namecheap.com";
@@ -163,6 +166,7 @@ impl NameCheapClient {
     /// ```
     ///
     pub fn new_from_env() -> Result<Self, Box<dyn std::error::Error>> {
+        dotenv().ok();
         use std::env::var;
         
         let user_name = var("NAMECHEAP_USER_NAME")?;

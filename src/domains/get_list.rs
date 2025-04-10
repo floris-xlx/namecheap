@@ -10,12 +10,13 @@ use tracing::{ info, error, warn };
 use std::error::Error;
 
 // crate imports
-use crate::{NameCheapClient, Domain};
+use crate::{ NameCheapClient, Domain };
 use crate::utils::request_builder::Request;
 use crate::response::paging::extract_pagination_info;
 use crate::response::parse_value::{ parse_string, parse_bool, parse_i64 };
 
 impl NameCheapClient {
+    /// - `domains.getList`: Gets a list of domains for the specified user
     /// Gets a list of domains for the specified user
     ///
     /// # Example
@@ -62,7 +63,7 @@ impl NameCheapClient {
         let page: i64 = page.max(1);
         let page: Option<i64> = Some(page);
 
-        let response: Value = Request::new(self.clone(), command, page, None).send().await?;
+        let response: Value = Request::new(self.clone(), command, page, None, None).send().await?;
 
         // Extract domains from the response
         if let Some(api_response) = response.get("ApiResponse") {

@@ -14,6 +14,7 @@ use crate::NameCheapClient;
 use crate::utils::request_builder::Request;
 
 impl NameCheapClient {
+    /// - `domains.getTldList`: Gets a list of supported TLDs
     /// Gets a list of supported TLDs
     ///
     /// ## Warning
@@ -41,14 +42,15 @@ impl NameCheapClient {
     pub async fn domains_get_tld_list(&self) -> Result<Value, Box<dyn Error>> {
         let command: String = "namecheap.domains.getTldList".to_string();
 
-        let response: Value = Request::new(self.clone(), command, None, None).send().await?;
+        let response: Value = Request::new(self.clone(), command, None, None, None).send().await?;
 
-        info!("Response: {:#?}", response);
         // Extract TLDs from the response
         if let Some(api_response) = response.get("ApiResponse") {
             if let Some(command_response) = api_response.get("CommandResponse") {
-                if let Some(result) = command_response.get("Tlds") {
-                    return Ok(result.clone());
+                if let Some(tlds) = command_response.get("Tlds") {
+                    if let Some(tld_list) = tlds.get("Tld") {
+                        return Ok(tld_list.clone());
+                    }
                 }
             }
         }
@@ -61,18 +63,17 @@ impl NameCheapClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use dotenv::dotenv;
+    use std::error::Error;
 
     #[tokio::test]
-    async fn test_domains_get_tld_list() {
-        dotenv().ok();
+    async fn test_domains_get_tld_list() -> Result<(), Box<dyn Error>> {
 
-        let client: Result<NameCheapClient, Box<dyn Error>> = NameCheapClient::new_from_env();
-        let client: NameCheapClient = client.unwrap();
-
-        let contacts: Value = client.domains_get_tld_list().await.unwrap();
+        let client: NameCheapClient = NameCheapClient::new_from_env()?;
+        let tld_list: Value = client.domains_get_tld_list().await?;
 
         // Basic validation
-        assert!(contacts.get("Tld").is_some());
+        assert!(tld_list.get(0).is_some());
+
+        Ok(())
     }
 }

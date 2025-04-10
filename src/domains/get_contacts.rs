@@ -15,6 +15,7 @@ use crate::utils::request_builder::Request;
 use crate::response::parse_value::parse_string;
 
 impl NameCheapClient {
+    /// - `domains.getContacts`: Gets contact information for the specified domain
     /// Gets contact information for the specified domain
     ///
     /// # Example
@@ -43,7 +44,8 @@ impl NameCheapClient {
             self.clone(),
             command,
             None,
-            Some(domain_name.to_string())
+            Some(domain_name.to_string()),
+            None // params
         ).send().await?;
 
         info!("Response: {:#?}", response);

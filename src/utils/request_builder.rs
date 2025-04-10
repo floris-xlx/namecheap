@@ -32,6 +32,8 @@ pub struct Request {
     domain_name: Option<String>,
     /// Domain ID (optional).
     domain_id: Option<i64>,
+    /// Additional parameters for the API request (optional).
+    params: Option<Value>,
 }
 
 impl Request {
@@ -50,13 +52,15 @@ impl Request {
         client: NameCheapClient,
         command: String,
         page: Option<i64>,
-        domain_name: Option<String>
+        domain_name: Option<String>,
+        params: Option<Value>,
     ) -> Self {
         Request {
             client,
             command,
             page,
             domain_name,
+            params,
             domain_id: None,
         }
     }
@@ -98,6 +102,17 @@ impl Request {
 
         if let Some(domain_id) = self.domain_id {
             url.push_str(&format!("&DomainID={}", domain_id));
+        }
+
+        // mostly used for the domains.dns lowkey ehh
+        // Add additional parameters if they exist
+        if let Some(ref params) = self.params {
+            if let Some(sld) = params.get("SLD") {
+                url.push_str(&format!("&SLD={}", sld.as_str().unwrap_or("")));
+            }
+            if let Some(tld) = params.get("TLD") {
+                url.push_str(&format!("&TLD={}", tld.as_str().unwrap_or("")));
+            }
         }
 
         url
